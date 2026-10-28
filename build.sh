@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 
 APP_NAME="Koderkatins"
 BUNDLE_ID="${BUNDLE_ID:-io.github.koderkatins}"
-VERSION="${VERSION:-1.2.0}"
+VERSION="${VERSION:-1.2.1}"
 APP="build/$APP_NAME.app"
 PETS="$APP/Contents/Resources/Pets"
 

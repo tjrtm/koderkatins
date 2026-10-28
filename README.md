@@ -148,6 +148,7 @@ Sources/Scanner.swift     incremental reader for the Claude Code session logs, h
 Sources/Usage.swift       plan-limit client
 Sources/Pets.swift        pet library, sprite-sheet slicing, pre-scaled frame cache
 Sources/SpritePlayer.swift  Core Animation frame player (timer per frame, pauses when hidden)
+Sources/Debug.swift       opt-in diagnostics file (KODERKATINS_DEBUG=1)
 Sources/Sounds.swift      sound playback and the alert rules
 Sources/Views.swift       pet, stats panel and Settings (SwiftUI)
 Sources/Prefs.swift       all settings (UserDefaults)
@@ -162,6 +163,7 @@ No Xcode project and no dependencies beyond the Swift toolchain and Pillow. `./b
 
 - `Koderkatins --dump` prints sessions, skins, hook status and the cached limits, then exits (`--limits` fetches them live, `--cold` ignores the scan cache)
 - `python3 tools/bench.py calm motion=1` relaunches the app with those settings and reports its average CPU
+- `open --env KODERKATINS_DEBUG=1 ~/Applications/Koderkatins.app` keeps `~/Library/Caches/Koderkatins/debug-state.json` up to date with what the app is really doing (animation speed, frame count, skin, window size, sounds played, limit requests). Handy for checking that a setting took effect; off by default.
 - `Koderkatins --settings` opens the Settings window at launch
 - `VERSION=1.2.0 BUNDLE_ID=com.example.pet ./build.sh` overrides the version and bundle ID
 

@@ -8,12 +8,12 @@ import QuartzCore
 /// Setting `layer.contents` with a `CATransition` hands the fade to the window server, so per-frame
 /// cost in this app is one timer callback and a pointer swap.
 final class SpritePlayerView: NSView {
-    var sprite: Sprite? { didSet { if sprite !== oldValue { idx = 0; render(animated: false) } } }
-    var scale: CGFloat = 0.5 { didSet { if scale != oldValue { render(animated: false) } } }
-    var frameDuration: Double = 0.3 { didSet { if frameDuration != oldValue { restartTimer() } } }
-    var restSeconds: Double = 2
-    var motion = 1                          // 0 still 1 calm 2 normal 3 lively 4 custom
-    var smooth = true
+    var sprite: Sprite? { didSet { if sprite !== oldValue { idx = 0; render(animated: false); report() } } }
+    var scale: CGFloat = 0.5 { didSet { if scale != oldValue { render(animated: false); report() } } }
+    var frameDuration: Double = 0.3 { didSet { if frameDuration != oldValue { restUntil = .distantPast; restartTimer() } } }
+    var restSeconds: Double = 2 { didSet { if restSeconds != oldValue { restUntil = .distantPast; report() } } }
+    var motion = 1 { didSet { if motion != oldValue { restUntil = .distantPast; report() } } }   // 0 still 1 calm 2 normal 3 lively 4 custom
+    var smooth = true { didSet { if smooth != oldValue { report() } } }
     var paused = false { didSet { if paused != oldValue { restartTimer() } } }
     var mood: () -> PetMood = { .idle }
 
@@ -61,10 +61,15 @@ final class SpritePlayerView: NSView {
         timer?.invalidate()
         timer = nil
         guard window != nil, !paused, !occluded else { return }
-        let t = Timer(timeInterval: frameDuration, repeats: true) { [weak self] _ in self?.tick() }
+        let t = Timer(timeInterval: frameDuration, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            self.tick()
+            if Debug.on, self.advances % 5 == 0 { self.report() }
+        }
         t.tolerance = frameDuration * 0.25     // lets macOS coalesce wake-ups
         RunLoop.main.add(t, forMode: .common)
         timer = t
+        report()
     }
 
     private func tick() {
@@ -88,6 +93,20 @@ final class SpritePlayerView: NSView {
         if next == idx && count <= 1 { return }
         idx = next
         render(animated: smooth)
+        advances += 1
+    }
+
+    private var advances = 0
+    /// Opt-in diagnostics (KODERKATINS_DEBUG=1): what the player is actually doing.
+    private func report() {
+        guard Debug.on else { return }
+        Debug.set("player", [
+            "frameDuration": frameDuration, "restSeconds": restSeconds, "motion": motion, "smooth": smooth,
+            "scale": Double(scale), "paused": paused, "occluded": occluded,
+            "timerInterval": timer?.timeInterval ?? 0, "sprite": sprite?.name ?? "-",
+            "pixelWidth": Int((sprite?.frameSize.width ?? 0) * scale * (window?.backingScaleFactor ?? 2)),
+            "shownMood": shownMood.rawValue, "frameAdvances": advances,
+        ])
     }
 
     private func frames() -> [CGImage] {

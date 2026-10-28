@@ -26,6 +26,7 @@ enum Sounds {
     private static var playing: [NSSound] = []
 
     static func play(_ ref: String, volume: Double) {
+        Debug.event("sound", "\(ref) volume \(String(format: "%.2f", volume))")
         guard ref != "none" else { return }
         let s: NSSound? = ref.hasPrefix("system:") ? NSSound(named: NSSound.Name(String(ref.dropFirst(7))))?.copy() as? NSSound
                                                    : NSSound(contentsOfFile: ref, byReference: true)

@@ -36,6 +36,9 @@ import ServiceManagement
                                   Publishers.CombineLatest(prefs.$fiveHourAlert, prefs.$weeklyAlert))
             .dropFirst().debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .sink { [weak self] _ in Task { @MainActor in await self?.refreshLimits() } }.store(in: &bag)
+        // a different "active" window should show up right away, not on the next safety tick
+        prefs.$activeMinutes.dropFirst().debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .sink { [weak self] _ in self?.refreshLogs() }.store(in: &bag)
         prefs.$limitsEveryMin.dropFirst().sink { [weak self] _ in Task { @MainActor in self?.schedule() } }.store(in: &bag)
         refreshLogs()
         Task { await refreshLimits() }
@@ -137,6 +140,11 @@ import ServiceManagement
         if s != sessions { sessions = s }
         if n != running { running = n }
         alerts.evaluate(model: self, prefs: prefs)
+        if Debug.on {
+            Debug.set("model", ["sessions": sessions.count, "running": running, "mood": mood.rawValue, "asleep": asleep,
+                                "five": five?.pct ?? -1, "week": week?.pct ?? -1, "limitError": limitError ?? "",
+                                "attention": attention.count, "activeMinutes": prefs.activeMinutes])
+        }
     }
 
     private var limitsCache = LimitsCache.load()
@@ -151,6 +159,10 @@ import ServiceManagement
             if limitError != nil { limitError = nil }
             return
         }
+        // switched back on: show the last known values right away instead of "—"
+        if five == nil, week == nil, limitsCache.five != nil || limitsCache.week != nil {
+            five = limitsCache.five; week = limitsCache.week
+        }
         let now = Date()
         let interval = TimeInterval(max(1, prefs.limitsEveryMin) * 60)
         if now < limitsCache.retryAfter { showPaused(); return }
@@ -158,7 +170,9 @@ import ServiceManagement
         fetchingLimits = true
         defer { fetchingLimits = false }
         limitsCache.attemptAt = now
+        Debug.event("limits", "request")
         let (a, b, e) = await UsageAPI.fetch()
+        Debug.event("limits", e ?? "ok")
         if a != nil || b != nil {
             limitsCache.five = a; limitsCache.week = b
             limitsCache.fetchedAt = Date(); limitsCache.backoff = 0
@@ -284,6 +298,12 @@ final class PetPanel: NSPanel {
     }
 
     func fit() {
+        defer {
+            if Debug.on {
+                Debug.set("window", ["w": panel.frame.width, "h": panel.frame.height, "x": panel.frame.minX, "y": panel.frame.minY,
+                                     "visible": panel.isVisible, "showPanel": prefs.showPanel])
+            }
+        }
         let size = host.intrinsicContentSize
         guard size.width > 0, size.height > 0, size != panel.frame.size else { return }
         let f = panel.frame

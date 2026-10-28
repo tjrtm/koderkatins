@@ -59,12 +59,14 @@ enum PetLibrary {
 
 /// A petdex sprite sheet: 8 columns × 9 rows of equally sized frames.
 final class Sprite {
+    let name: String
     private var rows: [[CGImage]] = []
     private var cache: [Int: [CGImage]] = [:]
     private var cachePixelWidth = 0
     let frameSize: NSSize
 
     init?(url: URL) {
+        name = url.deletingLastPathComponent().lastPathComponent
         guard let img = NSImage(contentsOf: url),
               let cg = img.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
         let cols = 8, rowsN = 9, w = cg.width / cols, h = cg.height / rowsN

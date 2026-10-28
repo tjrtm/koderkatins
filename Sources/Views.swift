@@ -160,7 +160,10 @@ struct SpriteView: View {
             if model.sprite == nil {
                 Text("🐱").font(.system(size: 100 * prefs.petScale))
             } else {
-                SpritePlayer(model: model, prefs: prefs).frame(width: w, height: h)
+                SpritePlayer(model: model, sprite: model.sprite, scale: prefs.petScale,
+                             frameDuration: prefs.frameDuration, restSeconds: prefs.restSeconds,
+                             motion: prefs.motion, smooth: prefs.smoothFrames, paused: model.asleep)
+                    .frame(width: w, height: h)
             }
         }
         .contentShape(Rectangle())
@@ -169,9 +172,17 @@ struct SpriteView: View {
     }
 }
 
+/// Settings are passed as plain values on purpose: SwiftUI calls `updateNSView` only when a stored
+/// property of this struct changes, and it can't see changes *inside* an ObservableObject.
 private struct SpritePlayer: NSViewRepresentable {
     let model: PetModel
-    let prefs: Prefs
+    let sprite: Sprite?
+    let scale: Double
+    let frameDuration: Double
+    let restSeconds: Double
+    let motion: Int
+    let smooth: Bool
+    let paused: Bool
 
     func makeNSView(context: Context) -> SpritePlayerView {
         let v = SpritePlayerView(frame: .zero)
@@ -180,13 +191,13 @@ private struct SpritePlayer: NSViewRepresentable {
     }
 
     func updateNSView(_ v: SpritePlayerView, context: Context) {
-        v.restSeconds = prefs.restSeconds
-        v.motion = prefs.motion
-        v.smooth = prefs.smoothFrames
-        v.frameDuration = prefs.frameDuration
-        v.scale = prefs.petScale
-        v.paused = model.asleep
-        v.sprite = model.sprite
+        v.restSeconds = restSeconds
+        v.motion = motion
+        v.smooth = smooth
+        v.frameDuration = frameDuration
+        v.scale = CGFloat(scale)
+        v.paused = paused
+        v.sprite = sprite
     }
 }
 
