@@ -1,9 +1,90 @@
+# Koderkatins .gitignore
+
+# ── Build output (./build.sh) ───────────────────────────────
 build/
 *.app
 *.zip
-.DS_Store
+*.dSYM/
+*.dSYM.zip
+*.xcarchive
+*.pkg
+*.dmg
+
+# ── Swift / Xcode (in case someone opens it in Xcode or adds a Package.swift) ──
 .build/
 .swiftpm/
+Packages/
+Package.resolved
+DerivedData/
+*.xcodeproj/
+*.xcworkspace/
 xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.moved-aside
+*.hmap
+*.o
+*.swiftmodule
+*.swiftdoc
+*.swiftsourceinfo
+
+# ── Python tools (tools/*.py) ───────────────────────────────
 __pycache__/
+*.py[cod]
+.venv/
+venv/
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ── Skins ───────────────────────────────────────────────────
+# importer previews are generated; spritesheet.webp + pet.json are the source of truth
 pets/*/preview.png
+# raw ChatGPT sheets and working files dropped in while making a skin
+pets/*/source/
+pets/*/*.psd
+pets/*/*.kra
+pets/*/*.aseprite
+*.orig.png
+
+# ── Sounds ──────────────────────────────────────────────────
+# never bundled (licences are usually unclear); keep them in
+# ~/Library/Application Support/Koderkatins/Sounds instead
+*.mp3
+*.wav
+*.aiff
+*.aif
+*.m4a
+*.caf
+
+# ── Local data and secrets that must never be published ─────
+.env
+.env.*
+*.pem
+*.p12
+*.mobileprovision
+*.provisionprofile
+scan-cache.json
+signals/
+
+# ── macOS ───────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Icon
+.Spotlight-V100
+.Trashes
+.fseventsd
+.TemporaryItems
+.DocumentRevisions-V100
+
+# ── Editors ─────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.nova/
+.zed/
