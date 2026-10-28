@@ -1,0 +1,9 @@
+build/
+*.app
+*.zip
+.DS_Store
+.build/
+.swiftpm/
+xcuserdata/
+__pycache__/
+pets/*/preview.png
