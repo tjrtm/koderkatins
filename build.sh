@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 
 APP_NAME="Koderkatins"
 BUNDLE_ID="${BUNDLE_ID:-io.github.koderkatins}"
-VERSION="${VERSION:-1.3.0}"
+VERSION="${VERSION:-1.3.1}"
 APP="build/$APP_NAME.app"
 PETS="$APP/Contents/Resources/Pets"
 
@@ -29,9 +29,9 @@ if [[ -d pets ]]; then
     echo "  + ${d:t}"
   done
 fi
-# App icon: first idle frame of the mascot when present
-if [[ -f pets/koderkatis/spritesheet.webp ]]; then
-  python3 - pets/koderkatis/spritesheet.webp build/icon.png <<'PY'
+# App icon: first idle frame of the default pet (Claudiks) when present
+if [[ -f pets/claudiks/spritesheet.webp ]]; then
+  python3 - pets/claudiks/spritesheet.webp build/icon.png <<'PY'
 import sys
 from PIL import Image
 f = Image.open(sys.argv[1]).convert("RGBA").crop((0, 0, 192, 208))

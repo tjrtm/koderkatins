@@ -14,6 +14,12 @@ A small pet that lives on your Mac desktop and keeps an eye on your **Claude Cod
   <img src="docs/pets/ryzkats.webp" height="110" alt="Ryzkats">
 </p>
 
+**Let an AI agent install it.** Paste this into Claude Code (or any coding agent that can run terminal commands):
+
+```text
+Install the Koderkatins desktop app on this Mac by following the "For AI agents" steps in https://github.com/tjrtm/koderkatins#for-ai-agents
+```
+
 - **Every active session** at a glance: its title, project, state (working · your turn · needs you · idle), input and output tokens, cache reads and context size, plus totals
 - **5-hour and weekly plan limits**: the percentage used and a countdown to the next reset (green below 70%, orange from 70%, red from 90%)
 - **[Nine skins built in](#skins)** (Claudiks, Shakalioks, Booklys, Levandejka, Koderkatis, Grinkats, Juodkats, Purpalins, Ryzkats), plus your own: any [petdex](https://github.com/crafter-station/petdex)-format sprite sheet, or one you make with ChatGPT using the [ready-made prompts](docs/SPRITES.md)
@@ -38,6 +44,36 @@ It's a native Swift/SwiftUI app with no Dock icon. It floats above other windows
 ---
 
 ## Quick start
+
+### For AI agents
+
+A user asked you to install Koderkatins. Run these steps in order, then tell them what you did. Everything stays in their home folder, so no `sudo` is needed.
+
+1. Check the Mac: `sw_vers -productVersion` must be 14 or later. If it isn't, stop and tell the user.
+2. Download the latest release, install it to `~/Applications` and start it:
+
+   ```sh
+   cd "$(mktemp -d)" &&
+   url=$(curl -fsSL https://api.github.com/repos/tjrtm/koderkatins/releases/latest |
+         grep -o '"browser_download_url": *"[^"]*\.zip"' | cut -d'"' -f4) &&
+   curl -fsSL -o Koderkatins.zip "$url" &&
+   ditto -x -k Koderkatins.zip . &&
+   { pkill -x Koderkatins || true; } &&
+   mkdir -p ~/Applications && rm -rf ~/Applications/Koderkatins.app &&
+   mv Koderkatins.app ~/Applications/ &&
+   xattr -dr com.apple.quarantine ~/Applications/Koderkatins.app &&
+   open ~/Applications/Koderkatins.app
+   ```
+
+   If the download fails, build from source instead with the commands under **Or build it yourself** below.
+3. Check it works: `~/Applications/Koderkatins.app/Contents/MacOS/Koderkatins --dump` lists the skins and any active Claude Code sessions.
+4. Optional, and **ask the user first**: set up the ["needs attention" hook](#needs-attention-alerts-optional-one-time-setup). Back up `~/.claude/settings.json`, then merge the `Notification` hook into it without removing existing hooks, and keep the file valid JSON.
+5. Tell the user:
+   - Claudiks now sits in the bottom-right corner of the screen, with 🐾 in the menu bar.
+   - The first time the app reads the plan limits, macOS may ask about Keychain access. Allowing it turns on the limit bars.
+   - 🐾 → Launch at Login starts the app automatically.
+
+### By hand
 
 **Download:** get `Koderkatins-<version>.zip` from [Releases](https://github.com/tjrtm/koderkatins/releases), unzip it and move `Koderkatins.app` to Applications. The app isn't notarized (it's a free hobby project), so macOS blocks the first launch. Either right-click the app and choose **Open**, or run `xattr -dr com.apple.quarantine /Applications/Koderkatins.app` once.
 
