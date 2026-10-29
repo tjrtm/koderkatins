@@ -143,6 +143,48 @@ def stabilize(frames, max_shift=18):
     return [c.crop(bb) for c in out] if bb else frames
 
 
+def grab_blobs(im, y0, y1, ncols, cell_w):
+    """Per column, cut the artwork out as whole connected blobs: [(x0, piece) or None].
+
+    A straight vertical cut slices off a tail tip that pokes under the neighbour's glasses.
+    Each blob goes to the column its centre falls in; small detached bits (sweat drops,
+    sparkles) join the nearest big blob. Returns None when scipy isn't installed."""
+    try:
+        import numpy as np
+        from scipy import ndimage
+    except ImportError:
+        return None
+    band = np.array(im.crop((0, y0, im.width, y1)))
+    labels, n = ndimage.label(band[..., 3] > 40)
+    if not n:
+        return [None] * ncols
+    ids = np.arange(1, n + 1)
+    area = np.asarray(ndimage.sum(np.ones_like(labels), labels, ids))
+    centre = np.asarray(ndimage.center_of_mass(np.ones_like(labels), labels, ids))   # (y, x)
+    big = area >= area.max() * 0.1
+    column = {}
+    for i in ids:
+        if area[i - 1] < area.max() * 0.0005:        # stray specks
+            continue
+        j = i
+        if not big[i - 1]:
+            j = int(ids[big][np.argmin(((centre[big] - centre[i - 1]) ** 2).sum(axis=1))])
+        column.setdefault(min(ncols - 1, int(centre[j - 1][1] // cell_w)), []).append(i)
+    grown = ndimage.grey_dilation(labels, size=(5, 5))   # keep the soft anti-aliased edge
+    out = []
+    for c in range(ncols):
+        if c not in column:
+            out.append(None)
+            continue
+        keep = np.isin(grown, column[c])
+        cols = np.where(keep.any(axis=0))[0]
+        x0, x1 = int(cols[0]), int(cols[-1]) + 1
+        rgba = band.copy()
+        rgba[..., 3] = np.where(keep, rgba[..., 3], 0)
+        out.append((x0, Image.fromarray(rgba[:, x0:x1])))
+    return out
+
+
 def split_sheet(im, nrows, ncols):
     """Cut one image holding several animations (one per row) into frames.
 
@@ -172,15 +214,22 @@ def split_sheet(im, nrows, ncols):
         # Keep the artist's placement: every frame of a row is cropped with the SAME box,
         # relative to its ideal grid cell, so the cat doesn't jitter between frames.
         cell_w = w / ncols
+        blobs = grab_blobs(im, y0, y1, ncols, cell_w)
         cells, union = [], None
         for c in range(ncols):
             ox = round(c * cell_w)
-            piece = Image.new("RGBA", (xs[c + 1] - xs[c], y1 - y0), (0, 0, 0, 0))
-            piece.alpha_composite(im.crop((xs[c], y0, xs[c + 1], y1)))
+            if blobs:
+                if blobs[c] is None:
+                    continue
+                x0, piece = blobs[c]
+            else:
+                x0 = xs[c]
+                piece = Image.new("RGBA", (xs[c + 1] - xs[c], y1 - y0), (0, 0, 0, 0))
+                piece.alpha_composite(im.crop((xs[c], y0, xs[c + 1], y1)))
             bb = piece.getchannel("A").point(lambda v: 255 if v > 24 else 0).getbbox()
-            cells.append((ox, xs[c], piece))
+            cells.append((ox, x0, piece))
             if bb:
-                b = (bb[0] + xs[c] - ox, bb[1], bb[2] + xs[c] - ox, bb[3])
+                b = (bb[0] + x0 - ox, bb[1], bb[2] + x0 - ox, bb[3])
                 union = b if union is None else (min(union[0], b[0]), min(union[1], b[1]), max(union[2], b[2]), max(union[3], b[3]))
         frames = []
         if union:

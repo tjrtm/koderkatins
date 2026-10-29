@@ -1,20 +1,33 @@
 # Koderkatins
 
-A small cat that lives on your Mac desktop and keeps an eye on your **Claude Code** usage.
+A small pet that lives on your Mac desktop and keeps an eye on your **Claude Code** usage.
+
+<p align="center">
+  <img src="docs/pets/claudiks.webp" height="110" alt="Claudiks">
+  <img src="docs/pets/shakalioks.webp" height="110" alt="Shakalioks">
+  <img src="docs/pets/booklys.webp" height="110" alt="Booklys">
+  <img src="docs/pets/levandejka.webp" height="110" alt="Levandejka">
+  <img src="docs/pets/koderkatis.webp" height="110" alt="Koderkatis">
+  <img src="docs/pets/grinkats.webp" height="110" alt="Grinkats">
+  <img src="docs/pets/juodkats.webp" height="110" alt="Juodkats">
+  <img src="docs/pets/purpalins.webp" height="110" alt="Purpalins">
+  <img src="docs/pets/ryzkats.webp" height="110" alt="Ryzkats">
+</p>
 
 - **Every active session** at a glance: its title, project, state (working · your turn · needs you · idle), input and output tokens, cache reads and context size, plus totals
 - **5-hour and weekly plan limits**: the percentage used and a countdown to the next reset (green below 70%, orange from 70%, red from 90%)
-- **Five skins built in** (Koderkatis, Grinkats, Juodkats, Purpalins, Ryzkats), plus your own: any [petdex](https://github.com/crafter-station/petdex)-format sprite sheet, or one you make with ChatGPT using the [ready-made prompts](docs/SPRITES.md)
+- **[Nine skins built in](#skins)** (Claudiks, Shakalioks, Booklys, Levandejka, Koderkatis, Grinkats, Juodkats, Purpalins, Ryzkats), plus your own: any [petdex](https://github.com/crafter-station/petdex)-format sprite sheet, or one you make with ChatGPT using the [ready-made prompts](docs/SPRITES.md)
 - **The pet reacts to what's happening**:
 
-  | Koderkatis… | when |
-  | --- | --- |
-  | types | Claude is writing (the session log changed in the last few seconds) |
-  | thinks | a session is mid-turn but quiet (the model is thinking or a tool is running) |
-  | celebrates | a turn just finished |
-  | looks puzzled | a session needs you (permission or question, via the optional hook) |
-  | gets sleepy | you're close to a plan limit, or no session is active |
-  | idles | sessions are open but waiting for you |
+  | | Claudiks… | when |
+  | --- | --- | --- |
+  | <img src="docs/pets/states/working.webp" height="72" alt="working"> | works | Claude is writing (the session log changed in the last few seconds) |
+  | <img src="docs/pets/states/thinking.webp" height="72" alt="thinking"> | thinks | a session is mid-turn but quiet (the model is thinking or a tool is running) |
+  | <img src="docs/pets/states/done.webp" height="72" alt="celebrating"> | celebrates | a turn just finished |
+  | <img src="docs/pets/states/attention.webp" height="72" alt="waving"> | waves at you | a session needs you (permission or question, via the optional hook) |
+  | <img src="docs/pets/states/worried.webp" height="72" alt="worried"> | gets worried | you're close to a plan limit (the alert threshold, 90% by default) |
+  | <img src="docs/pets/states/sleepy.webp" height="72" alt="sleepy"> | gets sleepy | no session is active (Claudiks just idles; the cats doze off) |
+  | <img src="docs/pets/states/idle.webp" height="72" alt="idle"> | idles | sessions are open but waiting for you |
 - **Sound alerts you can configure**, for example a mew every 3 minutes once the 5-hour limit passes 90%, when more than 5 sessions are active, or when a session needs your attention
 - **Fully configurable**: choose what the panel shows, the panel size (compact, regular or large), and the pet's size from small to huge
 
@@ -40,7 +53,7 @@ cd koderkatins
 open ~/Applications/Koderkatins.app
 ```
 
-A cat appears in the bottom-right corner of your main screen, and 🐾 appears in the menu bar.
+Claudiks appears in the bottom-right corner of your main screen, and 🐾 appears in the menu bar.
 
 Requirements: **macOS 14 or later**, and Claude Code logged in with a Claude subscription if you want the limit bars. Token counts work without logging in.
 
@@ -100,7 +113,27 @@ Without the hook you still get **"finished its turn"**, which is read from the s
 - **Use a petdex pet**: drop its folder (`spritesheet.webp` + `pet.json`) into 🐾 → Skins → Open Skins Folder… (`~/Library/Application Support/Koderkatins/Pets`).
 - **Ship it in the app**: put the folder in `pets/` in this repo and run `./build.sh`. It's bundled automatically.
 
-Built-in skins, each with 36 poses (idle, typing, thinking, celebrating, puzzled, sleepy): **Koderkatis** (default), **Grinkats**, **Juodkats**, **Purpalins** and **Ryzkats**. They live in `pets/` and were imported from single ChatGPT sheets with `tools/import_sprites.py`.
+### Built-in skins
+
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="docs/pets/claudiks.webp" height="150" alt="Claudiks"><br><b>Claudiks</b> (default)<br><sub>a three-eyed cosmic cloud in an orange bandana that codes on a hologram</sub></td>
+    <td align="center" width="33%"><img src="docs/pets/shakalioks.webp" height="150" alt="Shakalioks"><br><b>Shakalioks</b><br><sub>an acorn-capped wooden tinkerer with goggles and a pocket-watch heart</sub></td>
+    <td align="center" width="33%"><img src="docs/pets/booklys.webp" height="150" alt="Booklys"><br><b>Booklys</b><br><sub>a winged spellbook in a red scarf that writes with a quill</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/pets/levandejka.webp" height="150" alt="Levandejka"><br><b>Levandejka</b><br><sub>a spotted lavender cat in round glasses, typing on a laptop</sub></td>
+    <td align="center"><img src="docs/pets/koderkatis.webp" height="150" alt="Koderkatis"><br><b>Koderkatis</b><br><sub>the original mascot, a calico kitten in a purple hoodie</sub></td>
+    <td align="center"><img src="docs/pets/grinkats.webp" height="150" alt="Grinkats"><br><b>Grinkats</b><br><sub>a grey kitten with a sprout and a green bandana</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/pets/juodkats.webp" height="150" alt="Juodkats"><br><b>Juodkats</b><br><sub>a black cat with goggles and a green jacket</sub></td>
+    <td align="center"><img src="docs/pets/purpalins.webp" height="150" alt="Purpalins"><br><b>Purpalins</b><br><sub>a midnight-purple cat with a crescent moon and a starry robe</sub></td>
+    <td align="center"><img src="docs/pets/ryzkats.webp" height="150" alt="Ryzkats"><br><b>Ryzkats</b><br><sub>a ginger kitten in a blue hoodie with a pencil</sub></td>
+  </tr>
+</table>
+
+Each preview loops through every mood the skin has. Claudiks, Shakalioks, Booklys and Levandejka have five moods (idle, working, waving, celebrating, worried); thinking and sleepy fall back to working and idle. The cats have six moods with 36 poses (idle, typing, thinking, celebrating, puzzled, sleepy). All of them live in `pets/` and were imported from single ChatGPT sheets with `tools/import_sprites.py`; `python3 tools/make_previews.py` regenerates the previews above.
 
 ## How it works and what it reads
 
@@ -153,9 +186,11 @@ Sources/Sounds.swift      sound playback and the alert rules
 Sources/Views.swift       pet, stats panel and Settings (SwiftUI)
 Sources/Prefs.swift       all settings (UserDefaults)
 tools/import_sprites.py   turns ChatGPT images into a sprite sheet (stabilises frame-to-frame wobble)
+tools/make_previews.py    animated README previews in docs/pets from the sheets in pets/
 tools/bench.py            measures the running app's steady CPU with `top`
 pets/                     the skins bundled into every build
 docs/SPRITES.md           pet-making guide with prompts
+docs/pets/                README previews (generated)
 build.sh                  compile → bundle → sign → zip (→ --install)
 ```
 

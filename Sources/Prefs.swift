@@ -57,7 +57,7 @@ final class Prefs: ObservableObject {
     private init() {
         let d = UserDefaults.standard
         func v<T>(_ k: String, _ def: T) -> T { (d.object(forKey: k) as? T) ?? def }
-        petID = v("petID", "koderkatis"); petScale = v("petScale", 0.5)
+        petID = v("petID", "claudiks"); petScale = v("petScale", 0.5)
         frameDuration = v("frameDuration", 0.3); smoothFrames = v("smoothFrames", true)
         restSeconds = v("restSeconds", 2.0); motion = v("motion", 1)
         panelSize = v("panelSize", 1); showPanel = v("showPanel", true)
